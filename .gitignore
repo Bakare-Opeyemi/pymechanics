@@ -64,3 +64,6 @@ docs/_build/
 
 # Egg-info created by setup
 pymechanics.egg-info/
+
+# Reference textbooks
+Reference Textbooks/
