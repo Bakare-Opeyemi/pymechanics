@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pymechanics"
-version = "0.0.1"
+version = "0.2.0"
 description = "A Python library for classical mechanical engineering calculations"
 authors = [{ name="Bakare Abdullateef Opeyemi" }]
 readme = "README.md"
