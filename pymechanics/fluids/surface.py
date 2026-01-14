@@ -60,7 +60,7 @@ def capillary_rise(surface_tension, contact_angle, density, diameter, g=9.81):
     Returns:
         float: capillary rise height h in meters (m)
     """
-    return (4 * surface_tension * math.cos(contact_angle)) / (density * g * diameter)
+    return round((4 * surface_tension * math.cos(contact_angle)) / (density * g * diameter), 4)
 
 
 def cavitation_risk(local_pressure, vapor_pressure):
