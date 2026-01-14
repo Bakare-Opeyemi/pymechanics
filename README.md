@@ -38,6 +38,7 @@ from pymechanics.fluids import properties
 # Example (replace with real function names from `properties.py`):
 # result = properties.some_property_function(args)
 ```
+NB: All calculations are done using S.I. units
 
 ## Project layout
 
