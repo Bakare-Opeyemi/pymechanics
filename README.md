@@ -1,6 +1,6 @@
 # pymechanics
 
-A small Python library for classical mechanical engineering calculations. Provides utilities for fluid properties and common constants useful in engineering analyses.
+A Python library for classical mechanical engineering calculations. Provides utilities for fluid properties and common constants useful in engineering analyses.
 
 ## Features
 
