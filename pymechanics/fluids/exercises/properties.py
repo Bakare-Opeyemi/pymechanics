@@ -12,7 +12,7 @@ can programmatically retrieve, display, or solve them.
 # ==================================================
 
 QUESTION_1 = (
-    "Determine the mass density of an oil, if 3.0 tonnes of the oil occupies a volume of 4 m^3."
+    "Determine the mass density of an oil, if 3.00 tonnes of the oil occupies a volume of 4 m^3."
 )
 
 QUESTION_2 = (
