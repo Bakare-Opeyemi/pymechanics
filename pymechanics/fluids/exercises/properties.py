@@ -134,6 +134,6 @@ def get_answer(number: int) -> str:
 # Example Usage
 # ==================================================
 # Example usage:
-# from pymechanics.fluids.exercises.exercise_1_1 import get_question, get_answer
+# from pymechanics.fluids.exercises.properties import get_question, get_answer
 # print(get_question(3))
 # print(get_answer(3))
