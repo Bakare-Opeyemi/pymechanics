@@ -137,3 +137,121 @@ def get_answer(number: int) -> str:
 # from pymechanics.fluids.exercises.properties import get_question, get_answer
 # print(get_question(3))
 # print(get_answer(3))
+
+# ==================================================
+# Exercise 1.2 – Numerical Problems (Chapter 1)
+# ==================================================
+
+QUESTION_1_2_1 = (
+    "The mass density of a liquid is 850 kg/m^3. Determine its specific weight "
+    "and specific gravity. Take g = 9.81 m/s^2."
+)
+
+QUESTION_1_2_2 = (
+    "A liquid has a bulk modulus of elasticity of 2.1 GPa. Determine the "
+    "change in pressure required to produce a volumetric strain of 0.1%."
+)
+
+QUESTION_1_2_3 = (
+    "The volume of a liquid decreases by 0.02% when the pressure is increased "
+    "by 4 MPa. Determine the bulk modulus of the liquid."
+)
+
+QUESTION_1_2_4 = (
+    "Determine the capillary rise in a glass tube of 4 mm diameter when "
+    "immersed in water. Take surface tension = 0.072 N/m, contact angle = 0°, "
+    "and density of water = 1000 kg/m^3."
+)
+
+QUESTION_1_2_5 = (
+    "A liquid weighs 9 kN/m^3. Determine its mass density and specific gravity."
+)
+
+
+EXERCISE_1_2 = {
+    1: QUESTION_1_2_1,
+    2: QUESTION_1_2_2,
+    3: QUESTION_1_2_3,
+    4: QUESTION_1_2_4,
+    5: QUESTION_1_2_5,
+}
+
+
+def get_exercise_1_2_question(number: int) -> str:
+    """
+    Return a specific Exercise 1.2 question.
+
+    Parameters
+    ----------
+    number : int
+        Question number (1–5)
+
+    Returns
+    -------
+    str
+        The requested question as a string
+    """
+    if number not in EXERCISE_1_2:
+        raise ValueError("Question number must be between 1 and 5")
+    return EXERCISE_1_2[number]
+
+
+# ==================================================
+# Exercise 1.2 – Answers as Strings
+# ==================================================
+
+ANSWER_1_2_1 = (
+    "Specific weight = ρ g = 850 × 9.81 = 8338.5 N/m^3 ≈ 8.34 kN/m^3. "
+    "Specific gravity = ρ / ρ_water = 850 / 1000 = 0.85."
+)
+
+ANSWER_1_2_2 = (
+    "Bulk modulus K = Δp / (ΔV / V). "
+    "ΔV / V = 0.1% = 0.001. "
+    "Δp = K × (ΔV / V) = 2.1×10^9 × 0.001 = 2.1×10^6 Pa = 2.1 MPa."
+)
+
+ANSWER_1_2_3 = (
+    "Bulk modulus K = Δp / (ΔV / V). "
+    "ΔV / V = 0.02% = 0.0002. "
+    "K = 4×10^6 / 0.0002 = 2.0×10^10 Pa = 20 GPa."
+)
+
+ANSWER_1_2_4 = (
+    "Capillary rise h = 4 σ cosθ / (ρ g d). "
+    "h = (4 × 0.072 × cos0°) / (1000 × 9.81 × 0.004) "
+    "≈ 7.34×10^-3 m = 7.34 mm."
+)
+
+ANSWER_1_2_5 = (
+    "Mass density ρ = γ / g = 9000 / 9.81 ≈ 917 kg/m^3. "
+    "Specific gravity = ρ / 1000 ≈ 0.917."
+)
+
+
+EXERCISE_1_2_ANSWERS = {
+    1: ANSWER_1_2_1,
+    2: ANSWER_1_2_2,
+    3: ANSWER_1_2_3,
+    4: ANSWER_1_2_4,
+    5: ANSWER_1_2_5,
+}
+
+
+def get_exercise_1_2_answer(number: int) -> str:
+    """
+    Return the answer string for a specific Exercise 1.2 question.
+
+    Parameters
+    ----------
+    number : int
+        Question number (1–5)
+
+    Returns
+    -------
+    str
+        The requested answer as a string
+    """
+    if number not in EXERCISE_1_2_ANSWERS:
+        raise ValueError("Question number must be between 1 and 5")
+    return EXERCISE_1_2_ANSWERS[number]
