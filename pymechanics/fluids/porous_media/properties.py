@@ -223,3 +223,133 @@ def capillary_pressure_from_height(
     Pc = (ρw - ρnw) g h
     """
     return (rho_w - rho_nw) * g * h
+
+
+# -----------------------------
+# Darcy's Law
+# -----------------------------
+
+def darcy_velocity(
+    permeability: float,
+    viscosity: float,
+    pressure_gradient: float,
+) -> float:
+    """
+    Darcy (superficial) velocity in 1D.
+
+    v = -(k / μ) * (dp/dx)
+    """
+    if viscosity <= 0:
+        raise ValueError("Viscosity must be positive.")
+    return -(permeability / viscosity) * pressure_gradient
+
+
+def darcy_flow_rate(
+    permeability: float,
+    viscosity: float,
+    area: float,
+    pressure_drop: float,
+    length: float,
+) -> float:
+    """
+    Volumetric flow rate from Darcy's law.
+
+    Q = -(k A / μ) * (Δp / L)
+    """
+    if viscosity <= 0 or length <= 0 or area <= 0:
+        raise ValueError("Viscosity, area, and length must be positive.")
+    return -(permeability * area / viscosity) * (pressure_drop / length)
+
+
+def intrinsic_velocity(
+    darcy_velocity: float, porosity: float
+) -> float:
+    """
+    Pore (seepage) velocity.
+
+    vp = v / φ
+    """
+    if porosity <= 0:
+        raise ValueError("Porosity must be positive.")
+    return darcy_velocity / porosity
+
+
+# -----------------------------
+# Permeability
+# -----------------------------
+
+def permeability_from_darcy(
+    flow_rate: float,
+    viscosity: float,
+    length: float,
+    area: float,
+    pressure_drop: float,
+) -> float:
+    """
+    Compute permeability from Darcy experiment.
+
+    k = (Q μ L) / (A Δp)
+    """
+    if area <= 0 or pressure_drop == 0:
+        raise ValueError("Area must be positive and pressure drop non-zero.")
+    return (flow_rate * viscosity * length) / (area * pressure_drop)
+
+
+def hydraulic_conductivity(
+    permeability: float,
+    density: float,
+    gravity: float = 9.81,
+    viscosity: float = 1.0,
+) -> float:
+    """
+    Hydraulic conductivity (groundwater formulation).
+
+    K = (k ρ g) / μ
+    """
+    if viscosity <= 0:
+        raise ValueError("Viscosity must be positive.")
+    return (permeability * density * gravity) / viscosity
+
+
+def equivalent_permeability_series(
+    permeabilities: Dict[str, float],
+    lengths: Dict[str, float],
+) -> float:
+    """
+    Equivalent permeability for layered media (flow normal to layers).
+
+    1/keq = Σ (Li / ki) / Σ Li
+    """
+    total_length = sum(lengths.values())
+    if total_length <= 0:
+        raise ValueError("Total length must be positive.")
+
+    resistance = 0.0
+    for layer, k in permeabilities.items():
+        if k <= 0:
+            raise ValueError("Permeability must be positive.")
+        resistance += lengths[layer] / k
+
+    return total_length / resistance
+
+
+def equivalent_permeability_parallel(
+    permeabilities: Dict[str, float],
+    thicknesses: Dict[str, float],
+) -> float:
+    """
+    Equivalent permeability for layered media (flow parallel to layers).
+
+    keq = Σ (ki hi) / Σ hi
+    """
+    total_thickness = sum(thicknesses.values())
+    if total_thickness <= 0:
+        raise ValueError("Total thickness must be positive.")
+
+    weighted_sum = 0.0
+    for layer, k in permeabilities.items():
+        if k <= 0:
+            raise ValueError("Permeability must be positive.")
+        weighted_sum += k * thicknesses[layer]
+
+    return weighted_sum / total_thickness
