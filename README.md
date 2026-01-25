@@ -31,7 +31,6 @@ python -m build
 ## Quick usage
 
 Import modules from the package and call the provided helpers. Function names are defined in the source modules under `pymechanics/`.
-
 ```python
 from pymechanics.fluids import properties
 
