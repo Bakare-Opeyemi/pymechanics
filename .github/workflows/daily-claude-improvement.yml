@@ -59,6 +59,9 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Use the built-in token for git ops so the action doesn't try to mint
+          # one via OIDC (which needs id-token: write + the Claude GitHub App).
+          github_token: ${{ github.token }}
           claude_args: |
             --allowedTools Bash,Edit,Write,Read,Glob,Grep
             --max-turns 40
