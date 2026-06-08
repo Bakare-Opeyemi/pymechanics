@@ -1,0 +1,67 @@
+import pytest
+from pymechanics.fluids import pressure
+
+
+def test_pressure_basic():
+    assert pressure.pressure(1000.0, 0.5) == pytest.approx(2000.0)
+
+
+def test_hydrostatic_pressure():
+    # rho=1000 kg/m^3, g=9.81, h=10 m -> 98100 Pa
+    assert pressure.hydrostatic_pressure(10.0, 1000.0) == pytest.approx(98100.0)
+
+
+def test_absolute_pressure_default_atm():
+    assert pressure.absolute_pressure(50000.0) == pytest.approx(151325.0)
+
+
+def test_absolute_pressure_at_zero_gauge():
+    assert pressure.absolute_pressure(0.0) == pytest.approx(101325.0)
+
+
+def test_gauge_pressure():
+    assert pressure.gauge_pressure(151325.0) == pytest.approx(50000.0)
+
+
+def test_gauge_pressure_at_atmospheric():
+    assert pressure.gauge_pressure(101325.0) == pytest.approx(0.0)
+
+
+def test_absolute_gauge_roundtrip():
+    p_abs = pressure.absolute_pressure(30000.0)
+    assert pressure.gauge_pressure(p_abs) == pytest.approx(30000.0)
+
+
+def test_pascal_force():
+    # F2 = 100 * (0.1 / 0.01) = 1000 N
+    assert pressure.pascal_force(100.0, 0.01, 0.1) == pytest.approx(1000.0)
+
+
+def test_pressure_difference_manometer():
+    # mercury (13600) vs water (1000), h=0.1 m
+    expected = (13600.0 - 1000.0) * 9.81 * 0.1
+    assert pressure.pressure_difference_manometer(13600.0, 1000.0, 0.1) == pytest.approx(expected)
+
+
+def test_simple_manometer_pressure():
+    assert pressure.simple_manometer_pressure(1000.0, 0.5) == pytest.approx(4905.0)
+
+
+def test_total_pressure_plane_surface():
+    # F = rho*g*A*h_c = 1000*9.81*2.0*3.0
+    assert pressure.total_pressure_plane_surface(2.0, 3.0, 1000.0) == pytest.approx(58860.0)
+
+
+def test_centre_of_pressure_plane_surface():
+    # h_cp = 3.0 + 1.5/(2.0*3.0) = 3.25 m
+    assert pressure.centre_of_pressure_plane_surface(1.5, 2.0, 3.0) == pytest.approx(3.25)
+
+
+def test_buoyant_force():
+    # F_b = 1000 * 9.81 * 0.5 = 4905 N
+    assert pressure.buoyant_force(1000.0, 0.5) == pytest.approx(4905.0)
+
+
+def test_metacentric_height():
+    # GM = (10/5) - (3.0 - 2.0) = 1.0 m
+    assert pressure.metacentric_height(10.0, 5.0, 3.0, 2.0) == pytest.approx(1.0)
