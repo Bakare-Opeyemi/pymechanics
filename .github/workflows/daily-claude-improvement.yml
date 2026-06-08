@@ -1,0 +1,121 @@
+name: daily-claude-improvement
+
+# Runs entirely on GitHub's servers, independent of any local machine.
+# Schedule is UTC; 07:00 UTC == 08:00 WAT (UTC+1, no DST in Nigeria).
+on:
+  schedule:
+    - cron: "0 7 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-claude-improvement
+  cancel-in-progress: false
+
+jobs:
+  improve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check OAuth token secret is configured
+        id: guard
+        env:
+          OAUTH: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ -z "$OAUTH" ]; then
+            echo "::warning::CLAUDE_CODE_OAUTH_TOKEN is not set yet — skipping. Add it with: gh secret set CLAUDE_CODE_OAUTH_TOKEN --repo Bakare-Opeyemi/pymechanics"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.guard.outputs.skip != 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        if: steps.guard.outputs.skip != 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package and pytest
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest
+
+      - name: Baseline test suite (must already be green)
+        if: steps.guard.outputs.skip != 'true'
+        run: python -m pytest -q
+
+      - name: Claude makes one small improvement
+        if: steps.guard.outputs.skip != 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: |
+            --allowedTools Bash,Edit,Write,Read,Glob,Grep
+            --max-turns 40
+          prompt: |
+            You are an autonomous daily maintenance agent running in GitHub Actions for the
+            public Python library "pymechanics" (classical mechanical-engineering calculations:
+            fluid properties + utility constants; ALL values are SI units). The repository is
+            already checked out at the current working directory on branch `main`, and its
+            dependencies plus pytest are already installed.
+
+            Your job: make exactly ONE small, genuinely useful, low-risk improvement, and verify it.
+
+            RULES
+            - Make a focused change (aim for under ~40 lines of diff). Edit files ONLY within these
+              paths: `pymechanics/`, `tests/`, or `README.md`. Do NOT touch anything else (no
+              pyproject.toml, no version bumps, no dependencies, no CI/workflow files, no dotfiles).
+            - Keep the public API backward-compatible. Do not delete files. Do not rewrite history.
+            - Do NOT run any git write commands and do NOT commit or push — a later workflow step
+              handles committing. Just leave your edits in the working tree.
+
+            WHAT TO DO
+            1. Run `git log --oneline -10` (read-only) and skim the code so you do NOT repeat a
+               recent change; pick something different each day.
+            2. Choose ONE improvement, in rough order of preference:
+               - Add or strengthen a unit test in `tests/` for existing behavior (edge cases or
+                 currently-untested functions).
+               - Add a clear, correct docstring (state SI units, include a short example) to a
+                 public function that lacks one.
+               - Fix a small, real bug that you can demonstrate with a test.
+               - Improve `README.md` accuracy (e.g. replace the placeholder usage example with a
+                 real, working one using actual function names from the source).
+               - Add a small, well-tested helper function that fits the library's domain.
+            3. If you changed behavior, add/extend tests to cover it.
+            4. Run `python -m pytest -q` and make sure ALL tests pass. If anything fails, fix it or
+               revert your edit. Never leave the suite red.
+            5. Write a SINGLE-LINE Conventional Commit message describing your change to a file named
+               `COMMIT_MSG.txt` in the repository root (e.g. "test(fluids): cover negative-pressure
+               edge case" or "docs: document viscosity() units and example"). Write nothing else to
+               that file.
+
+            If you genuinely cannot find a safe, useful change, make a small real documentation
+            improvement instead. Do NOT produce a no-op.
+
+      - name: Commit and push if changed and tests pass
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          python -m pytest -q
+          if [ -z "$(git status --porcelain -- pymechanics tests README.md)" ]; then
+            echo "No changes in allowed paths; nothing to commit today."
+            exit 0
+          fi
+          MSG="chore: daily automated improvement"
+          if [ -s COMMIT_MSG.txt ]; then MSG="$(head -n 1 COMMIT_MSG.txt)"; fi
+          rm -f COMMIT_MSG.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- pymechanics tests README.md
+          git commit -m "$MSG" -m "Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
+          git push origin HEAD:main || { git pull --rebase origin main && python -m pytest -q && git push origin HEAD:main; }
