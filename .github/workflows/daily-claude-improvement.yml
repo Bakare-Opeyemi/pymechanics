@@ -120,5 +120,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- pymechanics tests README.md
-          git commit -m "$MSG" -m "Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
+          git commit -m "$MSG"
           git push origin HEAD:main || { git pull --rebase origin main && python -m pytest -q && git push origin HEAD:main; }
