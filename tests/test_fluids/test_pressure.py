@@ -57,6 +57,16 @@ def test_centre_of_pressure_plane_surface():
     assert pressure.centre_of_pressure_plane_surface(1.5, 2.0, 3.0) == pytest.approx(3.25)
 
 
+def test_horizontal_force_curved_surface():
+    # F_h = rho * g * A_v * h_c = 1000 * 9.81 * 0.5 * 2.0 = 9810 N
+    assert pressure.horizontal_force_curved_surface(0.5, 2.0, 1000.0) == pytest.approx(9810.0)
+
+
+def test_vertical_force_curved_surface():
+    # Returns the weight of fluid above the curved surface directly
+    assert pressure.vertical_force_curved_surface(4905.0) == pytest.approx(4905.0)
+
+
 def test_buoyant_force():
     # F_b = 1000 * 9.81 * 0.5 = 4905 N
     assert pressure.buoyant_force(1000.0, 0.5) == pytest.approx(4905.0)
