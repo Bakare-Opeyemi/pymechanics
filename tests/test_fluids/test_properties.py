@@ -28,6 +28,26 @@ def test_bulk_modulus():
     assert properties.bulk_modulus(200000.0, 0.01) == pytest.approx(200000.0 / 0.01)
 
 
+def test_specific_weight_custom_gravity():
+    # lunar gravity ~1.62 m/s^2 should scale the result proportionally
+    assert properties.specific_weight(1000.0, g=1.62) == pytest.approx(1620.0)
+
+
+def test_specific_gravity_custom_reference():
+    # SG of fresh water relative to seawater (1025 kg/m^3) should be slightly below 1
+    assert properties.specific_gravity(1000.0, rho_water=1025.0) == pytest.approx(1000.0 / 1025.0)
+
+
+def test_shear_stress_zero_gradient():
+    # static fluid (du/dy = 0) must produce zero shear stress regardless of viscosity
+    assert properties.shear_stress(0.8, 0.0) == pytest.approx(0.0)
+
+
+def test_bulk_modulus_negative_pressure_change():
+    # fluid expanding (negative delta_p, positive strain) yields a negative result
+    assert properties.bulk_modulus(-100000.0, 0.01) == pytest.approx(-1.0e7)
+
+
 # -----------------------------
 # Porous media – Chapter 1 examples
 # -----------------------------
