@@ -75,3 +75,34 @@ def test_buoyant_force():
 def test_metacentric_height():
     # GM = (10/5) - (3.0 - 2.0) = 1.0 m
     assert pressure.metacentric_height(10.0, 5.0, 3.0, 2.0) == pytest.approx(1.0)
+
+
+def test_hydrostatic_pressure_custom_gravity():
+    # Lunar gravity (~1.62 m/s^2): pressure at same depth scales proportionally
+    p_moon = pressure.hydrostatic_pressure(10.0, 1000.0, g=1.62)
+    assert p_moon == pytest.approx(16200.0)
+
+
+def test_gauge_pressure_vacuum():
+    # Absolute pressure below atmospheric gives a negative gauge pressure (vacuum)
+    p_gauge = pressure.gauge_pressure(50000.0)
+    assert p_gauge == pytest.approx(50000.0 - 101325.0)
+    assert p_gauge < 0
+
+
+def test_buoyant_force_custom_gravity():
+    # Martian gravity (~3.72 m/s^2): F_b = 1000 * 3.72 * 0.5 = 1860 N
+    assert pressure.buoyant_force(1000.0, 0.5, g=3.72) == pytest.approx(1860.0)
+
+
+def test_metacentric_height_negative_unstable():
+    # GM < 0 means G is above M — the body is unstable
+    # GM = (1.0/5.0) - (4.0 - 2.0) = 0.2 - 2.0 = -1.8 m
+    gm = pressure.metacentric_height(1.0, 5.0, 4.0, 2.0)
+    assert gm == pytest.approx(-1.8)
+    assert gm < 0
+
+
+def test_pascal_force_equal_areas():
+    # Identical piston areas: output force equals input force
+    assert pressure.pascal_force(500.0, 0.05, 0.05) == pytest.approx(500.0)
