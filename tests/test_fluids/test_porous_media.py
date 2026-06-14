@@ -126,3 +126,53 @@ def test_hydraulic_conductivity():
 def test_hydraulic_conductivity_rejects_nonpositive_viscosity():
     with pytest.raises(ValueError):
         porous.hydraulic_conductivity(1e-12, 1000, gravity=9.81, viscosity=0.0)
+
+
+# -----------------------------
+# Porosity / saturation guards
+# -----------------------------
+
+def test_porosity_rejects_zero_total_volume():
+    with pytest.raises(ValueError):
+        porous.porosity(0.1, 0.0)
+
+
+def test_saturation_rejects_zero_pore_volume():
+    with pytest.raises(ValueError):
+        porous.saturation(0.1, 0.0)
+
+
+# -----------------------------
+# Darcy-law error guards
+# -----------------------------
+
+def test_darcy_velocity_rejects_nonpositive_viscosity():
+    with pytest.raises(ValueError):
+        porous.darcy_velocity(1e-12, 0.0, 1e5)
+
+
+def test_darcy_flow_rate_rejects_nonpositive_viscosity():
+    with pytest.raises(ValueError):
+        porous.darcy_flow_rate(1e-13, 0.0, 1e-3, 5e4, 0.2)
+
+
+def test_darcy_flow_rate_rejects_nonpositive_length():
+    with pytest.raises(ValueError):
+        porous.darcy_flow_rate(1e-13, 1e-3, 1e-3, 5e4, 0.0)
+
+
+def test_permeability_from_darcy_rejects_zero_pressure_drop():
+    with pytest.raises(ValueError):
+        porous.permeability_from_darcy(1e-7, 1e-3, 0.1, 5e-4, 0.0)
+
+
+# -----------------------------
+# Capillary pressure – two finite radii
+# -----------------------------
+
+def test_capillary_pressure_two_finite_radii():
+    # σ=0.03 N/m, θ=0°, r1=1e-6 m, r2=2e-6 m
+    # curvature = 1/r1 + 1/r2 = 1e6 + 5e5 = 1.5e6 m⁻¹
+    # Pc = 0.03 * cos(0) * 1.5e6 = 45000 Pa
+    pc = porous.capillary_pressure(sigma=0.03, theta_deg=0.0, r1=1e-6, r2=2e-6)
+    assert pc == pytest.approx(45000.0)
