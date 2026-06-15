@@ -107,9 +107,21 @@ def centre_of_pressure_plane_surface(
     centroid_depth: float,
 ) -> float:
     """
-    Depth of centre of pressure for a vertical plane surface.
+    Depth to the centre of pressure on a vertical plane surface.
 
-    h_cp = h_c + (I_g / (A * h_c))
+    h_cp = h_c + I_g / (A * h_c)
+
+    Parameters:
+        I_g (float): second moment of area of the surface about its own centroidal axis (m^4)
+        area (float): total surface area (m^2)
+        centroid_depth (float): depth of the centroid below the free surface h_c (m)
+
+    Returns:
+        float: depth of centre of pressure h_cp in meters (m)
+
+    Example:
+        >>> centre_of_pressure_plane_surface(1.5, 2.0, 3.0)
+        3.25
     """
     return centroid_depth + (I_g / (area * centroid_depth))
 
@@ -125,7 +137,23 @@ def horizontal_force_curved_surface(
     g: float = g,
 ) -> float:
     """
-    Horizontal force on a curved surface.
+    Horizontal component of hydrostatic force on a curved surface.
+
+    Equals the force that would act on the vertical projection of the surface:
+    F_H = rho * g * A_v * h_c
+
+    Parameters:
+        area_vertical_projection (float): area of the vertical projection of the curved surface (m^2)
+        centroid_depth (float): depth of that projection's centroid below the free surface (m)
+        density (float): fluid density (kg/m^3)
+        g (float, optional): gravitational acceleration (m/s^2); default 9.81
+
+    Returns:
+        float: horizontal hydrostatic force F_H in Newtons (N)
+
+    Example:
+        >>> horizontal_force_curved_surface(0.5, 2.0, 1000.0)
+        9810.0
     """
     return density * g * area_vertical_projection * centroid_depth
 
@@ -159,9 +187,22 @@ def metacentric_height(
     center_of_buoyancy: float,
 ) -> float:
     """
-    Metacentric height (GM) for floating bodies.
+    Metacentric height (GM) for a floating body.
 
-    GM = (I / V) - BG
+    GM = (I / V) - BG,  where BG = G - B (both measured as heights above keel)
+
+    Parameters:
+        I_waterplane (float): second moment of the waterplane area about its centroidal axis (m^4)
+        displaced_volume (float): volume of fluid displaced by the body (m^3)
+        center_of_gravity (float): height of the center of gravity G above the keel (m)
+        center_of_buoyancy (float): height of the center of buoyancy B above the keel (m)
+
+    Returns:
+        float: metacentric height GM in meters (m); positive = stable, negative = unstable
+
+    Example:
+        >>> metacentric_height(10.0, 5.0, 3.0, 2.0)
+        1.0
     """
     BG = center_of_gravity - center_of_buoyancy
     return (I_waterplane / displaced_volume) - BG
