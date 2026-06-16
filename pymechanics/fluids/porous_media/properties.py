@@ -238,6 +238,19 @@ def darcy_velocity(
     Darcy (superficial) velocity in 1D.
 
     v = -(k / μ) * (dp/dx)
+
+    Parameters:
+        permeability (float): intrinsic permeability k in m^2
+        viscosity (float): dynamic viscosity μ in Pa·s (must be positive)
+        pressure_gradient (float): pressure gradient dp/dx in Pa/m; a positive
+            value means pressure increases in the +x direction, driving flow in −x
+
+    Returns:
+        float: Darcy (superficial) velocity v in m/s
+
+    Example:
+        >>> darcy_velocity(1e-12, 1e-3, 1e5)
+        -0.0001
     """
     if viscosity <= 0:
         raise ValueError("Viscosity must be positive.")
@@ -255,6 +268,21 @@ def darcy_flow_rate(
     Volumetric flow rate from Darcy's law.
 
     Q = -(k A / μ) * (Δp / L)
+
+    Parameters:
+        permeability (float): intrinsic permeability k in m^2
+        viscosity (float): dynamic viscosity μ in Pa·s (must be positive)
+        area (float): cross-sectional area A perpendicular to flow in m^2
+            (must be positive)
+        pressure_drop (float): pressure drop Δp = p_in − p_out in Pa
+        length (float): flow path length L in m (must be positive)
+
+    Returns:
+        float: volumetric flow rate Q in m^3/s
+
+    Example:
+        >>> darcy_flow_rate(2e-13, 1e-3, 1e-3, 5e4, 0.2)
+        -5e-08
     """
     if viscosity <= 0 or length <= 0 or area <= 0:
         raise ValueError("Viscosity, area, and length must be positive.")
@@ -268,6 +296,18 @@ def intrinsic_velocity(
     Pore (seepage) velocity.
 
     vp = v / φ
+
+    Parameters:
+        darcy_velocity (float): Darcy (superficial) velocity v in m/s
+        porosity (float): dimensionless pore volume fraction φ (must be positive)
+
+    Returns:
+        float: pore (seepage) velocity vp in m/s; always greater in magnitude
+            than the Darcy velocity because φ < 1
+
+    Example:
+        >>> intrinsic_velocity(0.01, 0.25)
+        0.04
     """
     if porosity <= 0:
         raise ValueError("Porosity must be positive.")
