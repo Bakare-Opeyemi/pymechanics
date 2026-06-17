@@ -167,6 +167,38 @@ def test_permeability_from_darcy_rejects_zero_pressure_drop():
 
 
 # -----------------------------
+# Darcy-law additional guards
+# -----------------------------
+
+def test_darcy_flow_rate_rejects_nonpositive_area():
+    with pytest.raises(ValueError):
+        porous.darcy_flow_rate(1e-13, 1e-3, 0.0, 5e4, 0.2)
+
+
+def test_permeability_from_darcy_rejects_nonpositive_area():
+    with pytest.raises(ValueError):
+        porous.permeability_from_darcy(1e-7, 1e-3, 0.1, 0.0, 2e5)
+
+
+# -----------------------------
+# Equivalent-permeability guards
+# -----------------------------
+
+def test_equivalent_permeability_series_rejects_nonpositive_permeability():
+    with pytest.raises(ValueError):
+        porous.equivalent_permeability_series(
+            {"L1": -1e-13, "L2": 5e-13}, {"L1": 0.4, "L2": 0.6}
+        )
+
+
+def test_equivalent_permeability_parallel_rejects_nonpositive_permeability():
+    with pytest.raises(ValueError):
+        porous.equivalent_permeability_parallel(
+            {"L1": -1e-13, "L2": 5e-13}, {"L1": 0.4, "L2": 0.6}
+        )
+
+
+# -----------------------------
 # Capillary pressure – two finite radii
 # -----------------------------
 
