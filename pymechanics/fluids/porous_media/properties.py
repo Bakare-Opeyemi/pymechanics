@@ -329,9 +329,25 @@ def permeability_from_darcy(
     Compute permeability from Darcy experiment.
 
     k = (Q μ L) / (A Δp)
+
+    Parameters:
+        flow_rate (float): measured volumetric flow rate Q in m^3/s
+        viscosity (float): dynamic viscosity μ in Pa·s (must be positive)
+        length (float): sample length L in m (must be positive)
+        area (float): cross-sectional area A in m^2 (must be positive)
+        pressure_drop (float): applied pressure drop Δp in Pa (must be non-zero)
+
+    Returns:
+        float: intrinsic permeability k in m^2
+
+    Example:
+        >>> permeability_from_darcy(1e-7, 1e-3, 0.1, 5e-4, 2e5)
+        1e-13
     """
-    if area <= 0 or pressure_drop == 0:
-        raise ValueError("Area must be positive and pressure drop non-zero.")
+    if area <= 0 or viscosity <= 0 or length <= 0:
+        raise ValueError("Area, viscosity, and length must be positive.")
+    if pressure_drop == 0:
+        raise ValueError("Pressure drop must be non-zero.")
     return (flow_rate * viscosity * length) / (area * pressure_drop)
 
 

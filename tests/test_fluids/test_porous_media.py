@@ -180,6 +180,16 @@ def test_permeability_from_darcy_rejects_nonpositive_area():
         porous.permeability_from_darcy(1e-7, 1e-3, 0.1, 0.0, 2e5)
 
 
+def test_permeability_from_darcy_rejects_nonpositive_viscosity():
+    with pytest.raises(ValueError):
+        porous.permeability_from_darcy(1e-7, 0.0, 0.1, 5e-4, 2e5)
+
+
+def test_permeability_from_darcy_rejects_nonpositive_length():
+    with pytest.raises(ValueError):
+        porous.permeability_from_darcy(1e-7, 1e-3, 0.0, 5e-4, 2e5)
+
+
 # -----------------------------
 # Equivalent-permeability guards
 # -----------------------------
