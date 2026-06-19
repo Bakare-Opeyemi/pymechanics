@@ -6,35 +6,80 @@ from pymechanics.utils.constants import g, rho_water
 # ==================================================
 
 def pressure(force: float, area: float) -> float:
-    """
-    Compute pressure.
+    """Return pressure given force and area.
 
-    P = F / A
+    Formula: P = F / A
+
+    Parameters:
+        force (float): applied force in Newtons (N)
+        area (float): area over which the force acts in square meters (m^2)
+
+    Returns:
+        float: pressure in Pascals (Pa)
+
+    Example:
+        >>> pressure(500.0, 0.25)
+        2000.0
     """
     return force / area
 
 
 def hydrostatic_pressure(depth: float, density: float, g: float = g) -> float:
-    """
-    Pressure at a depth in a static fluid.
+    """Return gauge pressure at a given depth in a static fluid.
 
-    p = rho * g * h
+    Formula: p = rho * g * h
+
+    Parameters:
+        depth (float): depth below the free surface h in meters (m)
+        density (float): fluid density rho in kg/m^3
+        g (float, optional): gravitational acceleration in m/s^2 (default 9.81)
+
+    Returns:
+        float: hydrostatic gauge pressure in Pascals (Pa)
+
+    Example:
+        >>> hydrostatic_pressure(10.0, 1000.0)
+        98100.0
     """
     return density * g * depth
 
 
 def absolute_pressure(gauge_pressure: float, atmospheric_pressure: float = 101325) -> float:
-    """
-    Absolute pressure from gauge pressure.
+    """Return absolute pressure from gauge pressure.
 
-    P_abs = P_gauge + P_atm
+    Formula: P_abs = P_gauge + P_atm
+
+    Parameters:
+        gauge_pressure (float): gauge pressure in Pascals (Pa)
+        atmospheric_pressure (float, optional): atmospheric reference pressure in Pa
+            (default 101325 Pa, i.e. standard atmosphere)
+
+    Returns:
+        float: absolute pressure in Pascals (Pa)
+
+    Example:
+        >>> absolute_pressure(50000.0)
+        151325.0
     """
     return gauge_pressure + atmospheric_pressure
 
 
 def gauge_pressure(absolute_pressure: float, atmospheric_pressure: float = 101325) -> float:
-    """
-    Gauge pressure from absolute pressure.
+    """Return gauge pressure from absolute pressure.
+
+    Formula: P_gauge = P_abs - P_atm
+
+    Parameters:
+        absolute_pressure (float): absolute pressure in Pascals (Pa)
+        atmospheric_pressure (float, optional): atmospheric reference pressure in Pa
+            (default 101325 Pa, i.e. standard atmosphere)
+
+    Returns:
+        float: gauge pressure in Pascals (Pa); negative value indicates vacuum
+
+    Example:
+        >>> gauge_pressure(151325.0)
+        50000.0
     """
     return absolute_pressure - atmospheric_pressure
 
