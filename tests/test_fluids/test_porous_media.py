@@ -66,6 +66,22 @@ def test_amott_indices():
     assert result["amott_harvey_index"] == pytest.approx(0.5)
 
 
+def test_amott_indices_zero_oil_injection_volumes():
+    # vo1 + vo2 = 0 → delta_water defaults to 0.0 (no oil displaced by imbibition)
+    result = porous.amott_indices(0, 0, 3, 7)
+    assert result["delta_water"] == pytest.approx(0.0)
+    assert result["delta_oil"] == pytest.approx(0.3)
+    assert result["amott_harvey_index"] == pytest.approx(-0.3)
+
+
+def test_amott_indices_zero_water_injection_volumes():
+    # vw1 + vw2 = 0 → delta_oil defaults to 0.0 (no water displaced by drainage)
+    result = porous.amott_indices(8, 2, 0, 0)
+    assert result["delta_water"] == pytest.approx(0.8)
+    assert result["delta_oil"] == pytest.approx(0.0)
+    assert result["amott_harvey_index"] == pytest.approx(0.8)
+
+
 def test_usbm_wettability_index():
     assert porous.usbm_wettability_index(100, 10) == pytest.approx(1.0)
 
@@ -126,6 +142,19 @@ def test_hydraulic_conductivity():
 def test_hydraulic_conductivity_rejects_nonpositive_viscosity():
     with pytest.raises(ValueError):
         porous.hydraulic_conductivity(1e-12, 1000, gravity=9.81, viscosity=0.0)
+
+
+def test_hydraulic_conductivity_custom_gravity():
+    # Martian gravity (3.72 m/s^2) must scale K linearly: K = k*rho*g/mu
+    k = porous.hydraulic_conductivity(1e-12, 1000, gravity=3.72, viscosity=1e-3)
+    assert k == pytest.approx(3.72e-6, rel=1e-6)
+
+
+def test_porosity_pressure_dependence_below_reference():
+    # pressure below p0 gives phi < phi0 (pore volume compresses)
+    phi = porous.porosity_pressure_dependence(0.2, 1e-9, 5e5, 1e6)
+    assert phi == pytest.approx(0.2 * (1.0 + 1e-9 * (5e5 - 1e6)))
+    assert phi < 0.2
 
 
 # -----------------------------
