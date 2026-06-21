@@ -53,3 +53,28 @@ def test_capillary_rise_custom_gravity():
     h_earth = surface.capillary_rise(sigma, theta, rho, d, g=9.81)
     # rounding to 4 dp inside capillary_rise limits precision; use 1 % tolerance
     assert h_moon == pytest.approx(h_earth * 9.81 / 1.62, rel=1e-2)
+
+
+def test_pressure_due_to_surface_tension_rejects_zero_radius():
+    with pytest.raises(ValueError):
+        surface.pressure_due_to_surface_tension(0.072, 0.0)
+
+
+def test_pressure_due_to_surface_tension_rejects_negative_radius():
+    with pytest.raises(ValueError):
+        surface.pressure_due_to_surface_tension(0.072, -0.001)
+
+
+def test_capillary_rise_rejects_zero_diameter():
+    with pytest.raises(ValueError):
+        surface.capillary_rise(0.072, 0.0, 1000, 0.0)
+
+
+def test_capillary_rise_rejects_negative_diameter():
+    with pytest.raises(ValueError):
+        surface.capillary_rise(0.072, 0.0, 1000, -0.001)
+
+
+def test_capillary_rise_rejects_zero_density():
+    with pytest.raises(ValueError):
+        surface.capillary_rise(0.072, 0.0, 0.0, 0.001)

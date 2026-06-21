@@ -36,11 +36,13 @@ def pressure_due_to_surface_tension(surface_tension, radius):
 
     Parameters:
         surface_tension (float): surface tension gamma in N/m
-        radius (float): radius of curvature R in m
+        radius (float): radius of curvature R in m (must be positive)
 
     Returns:
         float: pressure difference (Pa)
     """
+    if radius <= 0:
+        raise ValueError("Radius must be positive.")
     return 2 * surface_tension / radius
 
 
@@ -53,13 +55,17 @@ def capillary_rise(surface_tension, contact_angle, density, diameter, g=9.81):
     Parameters:
         surface_tension (float): surface tension gamma in N/m
         contact_angle (float): contact angle theta in radians
-        density (float): fluid density rho in kg/m^3
-        diameter (float): tube inner diameter d in m
+        density (float): fluid density rho in kg/m^3 (must be positive)
+        diameter (float): tube inner diameter d in m (must be positive)
         g (float, optional): gravitational acceleration in m/s^2 (default 9.81)
 
     Returns:
         float: capillary rise height h in meters (m)
     """
+    if diameter <= 0:
+        raise ValueError("Diameter must be positive.")
+    if density <= 0:
+        raise ValueError("Density must be positive.")
     return round((4 * surface_tension * math.cos(contact_angle)) / (density * g * diameter), 4)
 
 
