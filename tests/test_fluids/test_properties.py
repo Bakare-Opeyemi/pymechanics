@@ -48,6 +48,26 @@ def test_bulk_modulus_negative_pressure_change():
     assert properties.bulk_modulus(-100000.0, 0.01) == pytest.approx(-1.0e7)
 
 
+def test_density_rejects_zero_volume():
+    with pytest.raises(ValueError):
+        properties.density(1000.0, 0.0)
+
+
+def test_density_rejects_negative_volume():
+    with pytest.raises(ValueError):
+        properties.density(1000.0, -1.0)
+
+
+def test_kinematic_viscosity_rejects_zero_density():
+    with pytest.raises(ValueError):
+        properties.kinematic_viscosity(0.001, 0.0)
+
+
+def test_kinematic_viscosity_rejects_negative_density():
+    with pytest.raises(ValueError):
+        properties.kinematic_viscosity(0.001, -900.0)
+
+
 # -----------------------------
 # Porous media – Chapter 1 examples
 # -----------------------------

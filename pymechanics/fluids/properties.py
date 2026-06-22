@@ -30,11 +30,13 @@ def density(mass, volume):
 
     Parameters:
         mass (float): mass in kilograms (kg)
-        volume (float): volume in cubic meters (m^3)
+        volume (float): volume in cubic meters (m^3); must be positive
 
     Returns:
         float: density in kilograms per cubic meter (kg/m^3)
     """
+    if volume <= 0:
+        raise ValueError("Volume must be positive.")
     return mass / volume
 
 def specific_weight(density, g=9.81):
@@ -74,11 +76,13 @@ def kinematic_viscosity(dynamic_viscosity, density):
 
     Parameters:
         dynamic_viscosity (float): dynamic (absolute) viscosity mu in Pa·s
-        density (float): fluid density rho in kg/m^3
+        density (float): fluid density rho in kg/m^3; must be positive
 
     Returns:
         float: kinematic viscosity nu in m^2/s
     """
+    if density <= 0:
+        raise ValueError("Density must be positive.")
     return dynamic_viscosity / density
 
 def shear_stress(mu, velocity_gradient):
