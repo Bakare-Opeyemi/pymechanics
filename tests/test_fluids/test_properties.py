@@ -48,6 +48,11 @@ def test_bulk_modulus_negative_pressure_change():
     assert properties.bulk_modulus(-100000.0, 0.01) == pytest.approx(-1.0e7)
 
 
+def test_bulk_modulus_rejects_zero_volumetric_strain():
+    with pytest.raises(ValueError):
+        properties.bulk_modulus(200000.0, 0.0)
+
+
 def test_density_rejects_zero_volume():
     with pytest.raises(ValueError):
         properties.density(1000.0, 0.0)

@@ -113,5 +113,7 @@ def bulk_modulus(delta_p, volumetric_strain):
     Returns:
         float: bulk modulus in Pascals (Pa)
     """
+    if volumetric_strain == 0:
+        raise ValueError("Volumetric strain must be non-zero.")
     return delta_p / volumetric_strain
 
