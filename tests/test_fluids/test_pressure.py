@@ -106,3 +106,13 @@ def test_metacentric_height_negative_unstable():
 def test_pascal_force_equal_areas():
     # Identical piston areas: output force equals input force
     assert pressure.pascal_force(500.0, 0.05, 0.05) == pytest.approx(500.0)
+
+
+def test_pascal_force_rejects_zero_area1():
+    with pytest.raises(ValueError):
+        pressure.pascal_force(100.0, 0.0, 0.1)
+
+
+def test_pascal_force_rejects_negative_area1():
+    with pytest.raises(ValueError):
+        pressure.pascal_force(100.0, -0.01, 0.1)

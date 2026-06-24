@@ -89,11 +89,24 @@ def gauge_pressure(absolute_pressure: float, atmospheric_pressure: float = 10132
 # ==================================================
 
 def pascal_force(force1: float, area1: float, area2: float) -> float:
-    """
-    Force transmission using Pascal's law.
+    """Force transmission via Pascal's law.
 
-    F2 = F1 * (A2 / A1)
+    Formula: F2 = F1 * (A2 / A1)
+
+    Parameters:
+        force1 (float): input force in Newtons (N)
+        area1 (float): input piston area in square meters (m^2); must be positive
+        area2 (float): output piston area in square meters (m^2)
+
+    Returns:
+        float: output force F2 in Newtons (N)
+
+    Example:
+        >>> pascal_force(100.0, 0.01, 0.1)
+        1000.0
     """
+    if area1 <= 0:
+        raise ValueError("area1 must be positive.")
     return force1 * (area2 / area1)
 
 
