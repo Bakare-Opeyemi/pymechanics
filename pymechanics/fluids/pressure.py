@@ -120,19 +120,42 @@ def pressure_difference_manometer(
     height_difference: float,
     g: float = g,
 ) -> float:
-    """
-    Pressure difference measured using a differential manometer.
+    """Return pressure difference measured by a differential manometer.
 
-    Δp = (rho_m - rho_f) * g * h
+    Formula: Δp = (ρ_m − ρ_f) * g * h
+
+    Parameters:
+        density_manometric (float): density of the manometric (gauge) fluid ρ_m in kg/m^3
+        density_fluid (float): density of the process fluid ρ_f in kg/m^3
+        height_difference (float): manometer column height difference h in meters (m)
+        g (float, optional): gravitational acceleration in m/s^2 (default 9.81)
+
+    Returns:
+        float: pressure difference Δp in Pascals (Pa)
+
+    Example:
+        >>> pressure_difference_manometer(13600.0, 1000.0, 0.1)
+        12361.86
     """
     return (density_manometric - density_fluid) * g * height_difference
 
 
 def simple_manometer_pressure(density: float, height: float, g: float = g) -> float:
-    """
-    Pressure measured by a simple manometer.
+    """Return gauge pressure measured by a simple (open) manometer.
 
-    p = rho * g * h
+    Formula: p = ρ * g * h
+
+    Parameters:
+        density (float): manometric fluid density ρ in kg/m^3
+        height (float): fluid column height h in meters (m)
+        g (float, optional): gravitational acceleration in m/s^2 (default 9.81)
+
+    Returns:
+        float: gauge pressure p in Pascals (Pa)
+
+    Example:
+        >>> simple_manometer_pressure(1000.0, 0.5)
+        4905.0
     """
     return density * g * height
 
@@ -147,10 +170,23 @@ def total_pressure_plane_surface(
     density: float,
     g: float = g,
 ) -> float:
-    """
-    Total hydrostatic force on a plane surface.
+    """Return total hydrostatic force on a plane submerged surface.
 
-    F = rho * g * A * h_c
+    Formula: F = ρ * g * A * h_c
+
+    Parameters:
+        area (float): surface area A in square meters (m^2)
+        centroid_depth (float): depth of the surface centroid h_c below the free
+            surface in meters (m)
+        density (float): fluid density ρ in kg/m^3
+        g (float, optional): gravitational acceleration in m/s^2 (default 9.81)
+
+    Returns:
+        float: total hydrostatic force F in Newtons (N)
+
+    Example:
+        >>> total_pressure_plane_surface(2.0, 3.0, 1000.0)
+        58860.0
     """
     return density * g * area * centroid_depth
 
@@ -230,10 +266,21 @@ def vertical_force_curved_surface(weight_of_fluid: float) -> float:
 # ==================================================
 
 def buoyant_force(density: float, displaced_volume: float, g: float = g) -> float:
-    """
-    Buoyant force (Archimedes' principle).
+    """Return buoyant force on a submerged or floating body (Archimedes' principle).
 
-    F_b = rho * g * V
+    Formula: F_b = ρ * g * V
+
+    Parameters:
+        density (float): fluid density ρ in kg/m^3
+        displaced_volume (float): volume of fluid displaced by the body V in m^3
+        g (float, optional): gravitational acceleration in m/s^2 (default 9.81)
+
+    Returns:
+        float: buoyant force F_b in Newtons (N)
+
+    Example:
+        >>> buoyant_force(1000.0, 0.5)
+        4905.0
     """
     return density * g * displaced_volume
 
