@@ -247,3 +247,21 @@ def test_capillary_pressure_two_finite_radii():
     # Pc = 0.03 * cos(0) * 1.5e6 = 45000 Pa
     pc = porous.capillary_pressure(sigma=0.03, theta_deg=0.0, r1=1e-6, r2=2e-6)
     assert pc == pytest.approx(45000.0)
+
+
+def test_capillary_pressure_rejects_nonpositive_radius():
+    with pytest.raises(ValueError):
+        porous.capillary_pressure(sigma=0.03, theta_deg=0.0, r1=0.0)
+    with pytest.raises(ValueError):
+        porous.capillary_pressure(sigma=0.03, theta_deg=0.0, r1=1e-6, r2=-2e-6)
+
+
+def test_leverett_j_function_rejects_invalid_inputs():
+    with pytest.raises(ValueError):
+        porous.leverett_j_function(1000, 0.0, 0, 1e-12, 0.2)
+    with pytest.raises(ValueError):
+        porous.leverett_j_function(1000, 0.072, 0, 1e-12, 0.0)
+    with pytest.raises(ValueError):
+        porous.leverett_j_function(1000, 0.072, 0, -1e-12, 0.2)
+    with pytest.raises(ValueError):
+        porous.leverett_j_function(1000, 0.072, 90, 1e-12, 0.2)

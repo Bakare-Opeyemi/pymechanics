@@ -151,8 +151,25 @@ def capillary_pressure(
     """
     Laplace equation for capillary pressure.
 
-    Pc = σ (1/r1 + 1/r2)
+    Pc = σ cosθ (1/r1 + 1/r2)
+
+    Parameters:
+        sigma (float): interfacial tension σ in N/m
+        theta_deg (float): contact angle θ in degrees
+        r1 (float): first principal radius of curvature in m (must be positive)
+        r2 (float, optional): second principal radius of curvature in m
+            (must be positive). Defaults to infinity, which reduces the
+            expression to the cylindrical case Pc = σ cosθ / r1.
+
+    Returns:
+        float: capillary pressure Pc in Pa
+
+    Example:
+        >>> capillary_pressure(0.03, 0.0, 1e-6, 2e-6)
+        45000.0
     """
+    if r1 <= 0 or r2 <= 0:
+        raise ValueError("Radii of curvature must be positive.")
     theta = math.radians(theta_deg)
     cos_theta = math.cos(theta)
     curvature = (1.0 / r1) + (0.0 if math.isinf(r2) else (1.0 / r2))
@@ -191,9 +208,32 @@ def leverett_j_function(
     Leverett J-function.
 
     J(Sw) = Pc / (σ cosθ) * sqrt(k / φ)
+
+    Parameters:
+        pc (float): capillary pressure Pc in Pa
+        sigma (float): interfacial tension σ in N/m (must be positive)
+        theta_deg (float): contact angle θ in degrees; cosθ must be non-zero
+        permeability (float): intrinsic permeability k in m^2 (must be non-negative)
+        porosity (float): dimensionless pore volume fraction φ (must be positive)
+
+    Returns:
+        float: dimensionless Leverett J-function value
+
+    Example:
+        >>> round(leverett_j_function(1000, 0.072, 0, 1e-12, 0.2), 4)
+        0.0311
     """
+    if sigma <= 0:
+        raise ValueError("Interfacial tension must be positive.")
+    if porosity <= 0:
+        raise ValueError("Porosity must be positive.")
+    if permeability < 0:
+        raise ValueError("Permeability must be non-negative.")
     theta = math.radians(theta_deg)
-    return (pc / (sigma * math.cos(theta))) * math.sqrt(permeability / porosity)
+    cos_theta = math.cos(theta)
+    if math.isclose(cos_theta, 0.0, abs_tol=1e-12):
+        raise ValueError("Contact angle must not be 90 degrees (cos(theta) is zero).")
+    return (pc / (sigma * cos_theta)) * math.sqrt(permeability / porosity)
 
 
 # -----------------------------
@@ -281,7 +321,7 @@ def darcy_flow_rate(
         float: volumetric flow rate Q in m^3/s
 
     Example:
-        >>> darcy_flow_rate(2e-13, 1e-3, 1e-3, 5e4, 0.2)
+        >>> round(darcy_flow_rate(2e-13, 1e-3, 1e-3, 5e4, 0.2), 12)
         -5e-08
     """
     if viscosity <= 0 or length <= 0 or area <= 0:
@@ -341,7 +381,7 @@ def permeability_from_darcy(
         float: intrinsic permeability k in m^2
 
     Example:
-        >>> permeability_from_darcy(1e-7, 1e-3, 0.1, 5e-4, 2e5)
+        >>> round(permeability_from_darcy(1e-7, 1e-3, 0.1, 5e-4, 2e5), 18)
         1e-13
     """
     if area <= 0 or viscosity <= 0 or length <= 0:
